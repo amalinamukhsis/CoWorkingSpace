@@ -15,10 +15,21 @@ type coWorkS [NMAX]coWorkSpace
 
 func main() {
 	var cws coWorkS
-	var nData int
-	fmt.Scan(&nData)
-	bacaData(&cws, nData)
-	cetakData(cws, nData)
+	var nData, inputUser int
+	//munculkan kata selamat datang
+	fmt.Println("Selamat Datang di Co Working Space")
+	//munculkan opsi penggguna 1 pemilik, 2 pelanggan
+	fmt.Println("Masukkan Pilihan Pengguna: ")
+	fmt.Println("1. Pemilik\n2. Pelanggan ")
+	//scan input pemilik atau pelangga
+	fmt.Scan(&inputUser)
+	if inputUser == 1 {
+		fmt.Print("Masukkan Jumlah Co Working: ")
+		fmt.Scan(&nData)
+		bacaData(&cws, nData)
+		cetakData(cws, nData)
+	}
+
 }
 
 func bacaData(cws *coWorkS, n int) {
