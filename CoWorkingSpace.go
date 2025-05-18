@@ -139,19 +139,34 @@ func menuPelanggan(cws *coWorkS, nData *int) {
 	fmt.Print("Masukkan pilihan: ")
 	fmt.Scan(&pilihanPelanggan)
 
-	switch pilihanPelanggan {
-	case 1:
-		mencariCWS(cws, nData)
-	case 2:
-		fmt.Print("data belum ada")
-	case 3:
-		fmt.Print("data belum ada")
-	default:
-		fmt.Print("Pilihan tidak valid")
+	// switch pilihanPelanggan {
+	// case 1:
+	// 	mencariCWS(cws, nData)
+	// case 2:
+	// 	fmt.Print("data belum ada")
+	// case 3:
+	// 	fmt.Print("data belum ada")
+	// default:
+	// 	fmt.Print("Pilihan tidak valid")
+	// }
+}
+
+func fasilitas(cws *coWorkS, nData *int, keyWord string) {
+	found := false
+	for i := 0; i < *nData; i++ {
+		for j := 0; j < 10; j++ {
+			if keyWord == cws[i].fasilitas[j] {
+				fmt.Println("Fasilitas: ", cws[i].fasilitas[j])
+				found = true
+			}
+		}
+	}
+	if !found {
+		fmt.Println("Fasilitas tidak ditemukan.")
 	}
 }
 
-func mencariCWS(cws *coWorkS, nData *int)
+//func mencariCWS(cws *coWorkS, nData *int)
 
 // func bacaData(cws *coWorkS, n int) {
 // 	var i, j int
