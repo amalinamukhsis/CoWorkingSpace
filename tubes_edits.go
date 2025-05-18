@@ -17,10 +17,11 @@ type coWorkSpace struct {
 type coWorkS [NMAX]coWorkSpace
 
 /*deklarasi tipe bentukan Ulasan utk menyimpan data-data ulasan
-seperti ID, coWorkingID, username, kategori ulasan, rating dari pengguna*/
+seperti ID, coWorkingID, username, komentar, rating dari pengguna*/
 type Ulasan struct {
 	ID, coWorkingID    int
-	username, kategori string
+	username string
+	komentar [15]string
 	rating             float64
 }
 type arrUlasan [NMAX]Ulasan
@@ -34,9 +35,12 @@ func main() {
 	var aksesKe, aksesPilTambah int
 	var indexCws int
 	var keyNama, keyLokasi string
+	var valid, back bool
+	valid = false
+	back = false
 	aksesKe = 1
 	aksesPilTambah = 1
-	for valid := false; !valid; {
+	for !valid {
 		mainMenu()
 		fmt.Scan(&pilih)
 		// pengecekan pilihan pengguna
@@ -54,9 +58,21 @@ func main() {
 			} else {
 				hapusData(&cws, &nData)
 			}
-		} else if pilih == 1 && aksesKe > 1 {
-			/* data tersedia dan bisa menampilkan data */
-			cetakData(cws, nData)
+		} else {
+			if aksesKe == 1 {
+				DataKosong()
+			} else {
+				for !back {
+					menuPekerja()
+					fmt.Scan(&pilPekerja)
+					if pilPekerja == 7 {
+						back = true
+					} else if pilPekerja == 1 {
+						menuTambahUlasan()
+						bacaUlasan(&ulas)
+					}
+				}
+			}
 		} else if pilih == 2 {
 			/*menu baru (menuTambah) akan dimunculkan kemudian pengguna bisa memilih
 			akan melakukan aksi apa*/
@@ -133,6 +149,51 @@ func main() {
 		}
 		aksesKe++
 	}
+}
+
+func bacaUlasan(ulas *arrUlasan) {
+	var IdCws int
+	var i, j int
+	var sum float64 = 0
+	var idUlas int = 1
+	fmt.Scan(&IdCws)
+	i = IdCws-1
+
+	fmt.Println("+======================================+")
+	fmt.Printf("| %-36s |\n", "Komentar: isi dengan kategori dibawah ini:")
+	fmt.Printf("| %-36s |\n", "1. Nyaman")
+	fmt.Printf("| %-36s |\n", "2. Bersih")
+	fmt.Printf("| %-36s |\n", "3. Tenang")
+	fmt.Printf("| %-36s |\n", "4. Wifi/Internet_kencang")
+	fmt.Printf("| %-36s |\n", "5. Harga_terjangkau")
+	fmt.Printf("| %-36s |\n", "6. Fasilitas_lengkap")
+	fmt.Printf("| %-36s |\n", "7. Dekat_kampus")
+	fmt.Printf("| %-36s |\n", "8. Pelayanan_cepat")
+	fmt.Printf("| %-36s |\n", "9. View_bagus")
+	fmt.Printf("| %-36s |\n", "10. Dekat_kuliner")
+	fmt.Printf("| %-36s |\n", "11. Akses_mudah")
+	fmt.Printf("| %-36s |\n", "12. Tempat_rapi")
+	fmt.Printf("| %-36s |\n", "13. AC_dingin")
+	fmt.Printf("| %-36s |\n", "14. Toilet_bersih")
+	fmt.Printf("| %-36s |\n", "15. Satpam_ramah")
+	fmt.Printf("| %-36s |\n", "Maksimal 15 komentar, atau")
+	fmt.Printf("| %-36s |\n", "Jika telah selesai memilih kategori")
+	fmt.Printf("| %-36s |\n", "diakhiri dengan #")
+	fmt.Printf("| %-36s |\n", "EX: Nyaman Satpam_ramah #")
+	fmt.Println("+======================================+")
+
+	fmt.Printf("Ulasan Co-Working Space dengan ID:%d\n", IdCws)
+	fmt.Printf("\nUlasan ke-%d\n", i+1)
+	ulas[i].ID = IdCws
+	fmt.Printf("ID Ulasan: %d\n", ulas[i].ID)
+	fmt.Print("Username: ")
+	fmt.Scan(&ulas[i])
+	fmt.Print("Komentar: ")
+	fmt.Scan(&ulas[i].komentar[j])
+	for ulas[i].komentar[j] != "#" {
+		
+	}
+	cws[n].rating = sum / float64(j)
 }
 
 func hapusData(cws *coWorkS, n *int) {
@@ -331,61 +392,11 @@ func menuTambahTempat() {
 	fmt.Print("Banyak co-working space yang akan dimasukkan: ")
 }
 
-/*func menuTambah() {
-	fmt.Println("+========================================================+")
-	fmt.Printf("|%16s%s%16s|\n", "", "Silakan Pilih Aktivitas!", "")
-	fmt.Printf("| %-54s |\n", "1. Tambah Tempat Co-Working Space")
-	fmt.Printf("| %-54s |\n", "2. Tambah Ulasan Co-Working Space")
-	fmt.Printf("| %-54s |\n", "3. Ubah Data Co-Working Space")
-	fmt.Printf("| %-54s |\n", "4. Ubah Ulasan")
-	fmt.Printf("| %-54s |\n", "5. Hapus Data Co-Working Space")
-	fmt.Printf("| %-54s |\n", "6. Hapus Ulasan")
-	fmt.Println("+========================================================+")
-	fmt.Print("Pilih (1/2/3/4/5/6): ")
-}*/
-
 func menuTambahUlasan() {
 	fmt.Println("+========================================================+")
 	fmt.Printf("|%7s%s%7s|\n", "", "Tambah Ulasan untuk Co-Working Space berapa?", "")
 	fmt.Println("+========================================================+")
 	fmt.Print("Ulasan Co-Working Space Nomor: ")
-}
-
-func bacaUlasan(cws *coWorkS, n int) {
-	var j int = 0
-	var sum float64 = 0
-	fmt.Println("+======================================+")
-	fmt.Printf("| %-36s |\n", "Ketik kategori dibawah ini:")
-	fmt.Printf("| %-36s |\n", "1. Nyaman")
-	fmt.Printf("| %-36s |\n", "2. Bersih")
-	fmt.Printf("| %-36s |\n", "3. Tenang")
-	fmt.Printf("| %-36s |\n", "4. Wifi/Internet_kencang")
-	fmt.Printf("| %-36s |\n", "5. Harga_terjangkau")
-	fmt.Printf("| %-36s |\n", "6. Fasilitas_lengkap")
-	fmt.Printf("| %-36s |\n", "7. Dekat_kampus")
-	fmt.Printf("| %-36s |\n", "8. Pelayanan_cepat")
-	fmt.Printf("| %-36s |\n", "9. View_bagus")
-	fmt.Printf("| %-36s |\n", "10. Dekat_kuliner")
-	fmt.Printf("| %-36s |\n", "11. Akses_mudah")
-	fmt.Printf("| %-36s |\n", "12. Tempat_rapi")
-	fmt.Printf("| %-36s |\n", "13. AC_dingin")
-	fmt.Printf("| %-36s |\n", "14. Toilet_bersih")
-	fmt.Printf("| %-36s |\n", "15. Satpam_ramah")
-	fmt.Printf("| %-36s |\n", "jika telah selesai memilih kategori,")
-	fmt.Printf("| %-36s |\n", "akhiri dengan #")
-	fmt.Println("+======================================+")
-	fmt.Printf("\nUlasan %d: ", j+1)
-	fmt.Scan(&cws[n].ulasan[j])
-	for cws[n].ulasan[j] != "#" {
-		fmt.Print("Rating (range 0.0-5.0): ")
-		fmt.Scan(&cws[n].rating)
-		sum = sum + cws[n].rating
-		j++
-		cws[n].lenUlasan++
-		fmt.Printf("\nUlasan %d: ", j+1)
-		fmt.Scan(&cws[n].ulasan[j])
-	}
-	cws[n].rating = sum / float64(j)
 }
 
 func bacaData(cws *coWorkS, n int) {
