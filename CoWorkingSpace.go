@@ -124,6 +124,21 @@ func tambahCWS(cws *coWorkS, nData *int) {
 
 }
 
+func fasilitas(cws *coWorkS, nData *int, keyWord string) {
+	found := false
+	for i := 0; i < *nData; i++ {
+		for j := 0; j < 10; j++ {
+			if keyWord == cws[i].fasilitas[j] {
+				fmt.Println("Fasilitas: ", cws[i].fasilitas[j])
+				found = true
+			}
+		}
+	}
+	if !found {
+		fmt.Println("Fasilitas tidak ditemukan.")
+	}
+}
+
 func menuPelanggan(cws *coWorkS, nData *int) {
 	var pilihanPelanggan int
 	fmt.Println("Pilih Menu Pelanggan: ")
@@ -151,22 +166,20 @@ func menuPelanggan(cws *coWorkS, nData *int) {
 	// }
 }
 
-func fasilitas(cws *coWorkS, nData *int, keyWord string) {
-	found := false
-	for i := 0; i < *nData; i++ {
-		for j := 0; j < 10; j++ {
-			if keyWord == cws[i].fasilitas[j] {
-				fmt.Println("Fasilitas: ", cws[i].fasilitas[j])
-				found = true
-			}
+func hapusUlasan(cws *coWorkS, n int) {
+	var idx int
+	fmt.Print("Masukkan data ulasan yang ingin dihapus (0 - ", n-1, "): ")
+	fmt.Scan(&idx)
+
+	if idx >= 0 && idx < n {
+		for i := 0; i < 50; i++ {
+			cws[idx].ulasan[i] = ""
 		}
-	}
-	if !found {
-		fmt.Println("Fasilitas tidak ditemukan.")
+		fmt.Println("Ulasan berhasil dihapus")
+	} else {
+		fmt.Println("Indeks tidak valid")
 	}
 }
-
-//func mencariCWS(cws *coWorkS, nData *int)
 
 // func bacaData(cws *coWorkS, n int) {
 // 	var i, j int
