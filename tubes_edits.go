@@ -30,28 +30,30 @@ func main() {
 	var cws coWorkS
 	var ulas arrUlasan
 	var nData, n int
-	var pilih, pilTambah, pilCari int
+	var pilih, pilPemilik, pilPekerja, pilTambah, pilCari int
 	var aksesKe, aksesPilTambah int
 	var indexCws int
 	var keyNama, keyLokasi string
 	aksesKe = 1
 	aksesPilTambah = 1
-	// menu utama (mainMenu) akan terus dimunculkan hingga pengguna memilih exit
 	for valid := false; !valid; {
 		mainMenu()
-		fmt.Print("Pilih (1/2/3/4/5/6/7/8)? ")
 		fmt.Scan(&pilih)
 		// pengecekan pilihan pengguna
-		if pilih == 8 {
+		if pilih == 3 {
 			valid = true
-		} else if (pilih == 1 || pilih == 3 || pilih == 4 || pilih == 5 || pilih == 6 || pilih == 7) && aksesKe == 1 {
-			/*jika pengguna memilih 1/3/4 saat pertama kali mengakses, pengguna
-			akan diberitahu bahwa data belum tersedia dan diminta untuk mengisi
-			data co-working space terlebih dulu */
-			DataKosong()
+		} else if pilih == 1 {
 			menuTambahTempat()
 			fmt.Scan(&nData)
 			bacaData(&cws, nData)
+			cetakData()
+			menuPemilik()
+			fmt.Scan(&pilPemilik)
+			if pilPemilik == 1 {
+				ubahData(&cws)
+			} else {
+				hapusData(&cws, &nData)
+			}
 		} else if pilih == 1 && aksesKe > 1 {
 			/* data tersedia dan bisa menampilkan data */
 			cetakData(cws, nData)
@@ -133,6 +135,78 @@ func main() {
 	}
 }
 
+func hapusData(cws *coWorkS, n *int) {
+	var dataKe, i int
+	fmt.Println("+======================================================+")
+	fmt.Printf("|%5s%s%5s|\n", "", "Menghapus data co-working space ke berapa?", "")
+	fmt.Println("+======================================================+")
+	fmt.Print("Co-working space: ")
+	fmt.Scan(&dataKe)
+	for i = dataKe; i < *n; i++ {
+		cws[i] = cws[i+1]
+	}
+	*n--
+}
+
+func ubahData(cws *coWorkS) {
+	var dataKe, i, j int
+	fmt.Println("+======================================================+")
+	fmt.Printf("|%5s%s%5s|\n", "", "Mengubah data co-working space ke berapa?", "")
+	fmt.Println("+======================================================+")
+	fmt.Print("Co-working space: ")
+	fmt.Scan(&dataKe)
+	i = dataKe - 1
+	fmt.Printf("\nCo-Working Space %d\n", i+1)
+	fmt.Printf("Nama Co-Working Space sebelumnya: %s\n", cws[i].nama)
+	fmt.Print("Masukkan Nama Co-Working Space yang baru: ")
+	fmt.Scan(&cws[i].nama)
+
+	fmt.Printf("Lokasi Co-Working Space sebelumnya: %s\n", cws[i].lokasi)
+	fmt.Print("Masukkan Nama Co-Working Space yang baru: ")
+	fmt.Scan(&cws[i].lokasi)
+
+	fmt.Print("Fasilitas Co-Working Space sebelumnya: ")
+	for j := 0; j < cws[i].lenFasilitas; j++ {
+		fmt.Print(cws[i].fasilitas[j])
+		if j < cws[i].lenFasilitas-1 {
+			fmt.Print(", ")
+		}
+	}
+	fmt.Print("Masukkan Fasilitas Co-Working Space yang baru: ")
+	fmt.Println("Masukkan fasilitas maksimal 10 / ketik # untuk berhenti")
+	cws[i].lenFasilitas = 1
+	j = 0
+	for j < 10 {
+		fmt.Printf("Fasilitas ke %d: ", j+1)
+		fmt.Scan(&cws[i].fasilitas[j])
+		if cws[i].fasilitas[j] == "#" {
+			j = 10
+			cws[i].lenFasilitas++
+			j++
+		}
+	}
+
+	fmt.Print("Harga Sewa Co-Working Space sebelumnya: Rp. %.0f\n", cws[i].harga_sewa)
+	fmt.Print("Masukkan harga sewa Co-Working Space yang baru: ")
+	fmt.Scan(&cws[i].harga_sewa)
+}
+
+func cariFasilitas(cws *coWorkS, nData *int, keyWord string) {
+	var found bool = false
+	var i, j int
+	for i = 0; i < *nData; i++ {
+		for j = 0; j < 10; j++ {
+			if keyWord == cws[i].fasilitas[j] {
+				fmt.Println("Fasilitas: ", cws[i].fasilitas[j])
+				found = true
+			}
+		}
+	}
+	if !found {
+		fmt.Println("Fasilitas tidak ditemukan.")
+	}
+}
+
 func printData(cws coWorkS, idx int) {
 	var j int
 	fmt.Printf("\nData Co-Working Space %d", idx+1)
@@ -200,26 +274,55 @@ func DataKosong() {
 func mainMenu() {
 	fmt.Println("+========== Coseum [Platform Co-Working Space] ==========+")
 	fmt.Printf("|  %s  |\n", "Selamat datang di Coseum [Penyedia Co-Working Space]")
-	fmt.Printf("|%13s%s%13s|\n", "", "Pilih yang ingin anda lakukan:", "")
-	fmt.Printf("| %-54s |\n", "1. Tampilkan data co-working space")
-	fmt.Printf("| %-54s |\n", "2. Tambah/Edit data co-working space")
-	fmt.Printf("| %-54s |\n", "3. Cari berdasarkan Nama(Sequential)")
-	fmt.Printf("| %-54s |\n", "4. Cari berdasarkan Lokasi(Binary)")
-	fmt.Printf("| %-54s |\n", "5. Urutkan berdasarkan Harga sewa Terrendah")
-	fmt.Printf("| %-54s |\n", "6. Urutkan berdasarkan Rating Tertinggi")
-	fmt.Printf("| %-54s |\n", "7. Tampilkan data berdasar fasilitas")
-	fmt.Printf("| %-54s |\n", "8. exit")
+	fmt.Printf("|%21s%s%21s|\n", "", "Masuk Sebagai:", "")
+	fmt.Printf("| %-54s |\n", "1. Pemilik Co-Working Space")
+	fmt.Printf("| %-54s |\n", "2. Pengguna Co-Working Space (Pekerja)")
+	fmt.Printf("| %-54s |\n", "3. exit")
 	fmt.Println("+========================================================+")
+	fmt.Print("Pilih (1/2/3)? ")
 }
 
-// func menuCariData() {
-// 	fmt.Printf("+===========================+\n")
-// 	fmt.Printf("|%6s%s%6s|\n", " ", "Cari berdasarkan:", " ")
-// 	fmt.Printf("| %-29s |\n", "1. Nama (Sequential)")
-// 	fmt.Printf("| %-29s |\n", "2. Nama (Binary)")
-// 	fmt.Printf("| %-29s |\n", "2. Lokasi")
-// 	fmt.Printf("+===========================+\n")
-// }
+func menuFasilitas() {
+	fmt.Println("+======================================================+")
+	fmt.Printf("|%5s%s%5s|\n", "", "Fasilitas apa yang anda cari?", "")
+	fmt.Println("+======================================================+")
+	fmt.Print("Fasilitas: ")
+}
+
+func menuUlasan() {
+	fmt.Println("+========== Coseum [Platform Co-Working Space] ==========+")
+	fmt.Printf("|%13s%s%13s|\n", "", "Pilih yang ingin anda lakukan:", "")
+	fmt.Printf("| %-54s |\n", "1. Ubah Ulasan Co-Working Space")
+	fmt.Printf("| %-54s |\n", "2. Hapus Ulasan Co-Working Space")
+	fmt.Printf("| %-54s |\n", "3. exit")
+	fmt.Println("+========================================================+")
+	fmt.Print("Pilih (1/2/3)? ")
+}
+
+func menuPekerja() {
+	fmt.Println("+========== Coseum [Platform Co-Working Space] ==========+")
+	fmt.Printf("|  %s  |\n", "Selamat datang di Coseum [Penyedia Co-Working Space]")
+	fmt.Printf("|%13s%s%13s|\n", "", "Pilih yang ingin anda lakukan:", "")
+	fmt.Printf("| %-54s |\n", "1. Tambah Ulasan Co-Working Space")
+	fmt.Printf("| %-54s |\n", "2. Cari berdasarkan Nama(Sequential)")
+	fmt.Printf("| %-54s |\n", "3. Cari berdasarkan Lokasi(Binary)") // data diurutin trs ditampilin trs diminta utk input keyLokasi
+	fmt.Printf("| %-54s |\n", "4. Urutkan berdasarkan Harga sewa Terrendah")
+	fmt.Printf("| %-54s |\n", "5. Urutkan berdasarkan Rating Tertinggi")
+	fmt.Printf("| %-54s |\n", "6. Tampilkan data berdasar fasilitas")
+	fmt.Printf("| %-54s |\n", "7. exit")
+	fmt.Println("+========================================================+")
+	fmt.Print("Pilih (1/2/3/4/5/6/7)? ")
+}
+
+func menuPemilik() {
+	fmt.Println("+========== Coseum [Platform Co-Working Space] ==========+")
+	fmt.Printf("|%13s%s%13s|\n", "", "Pilih yang ingin anda lakukan:", "")
+	fmt.Printf("| %-54s |\n", "1. Ubah Data Co-Working Space")
+	fmt.Printf("| %-54s |\n", "2. Hapus Data Co-Working Space")
+	fmt.Printf("| %-54s |\n", "3. exit")
+	fmt.Println("+========================================================+")
+	fmt.Print("Pilih (1/2/3)? ")
+}
 
 func menuTambahTempat() {
 	fmt.Println("+======================================================+")
@@ -228,7 +331,7 @@ func menuTambahTempat() {
 	fmt.Print("Banyak co-working space yang akan dimasukkan: ")
 }
 
-func menuTambah() {
+/*func menuTambah() {
 	fmt.Println("+========================================================+")
 	fmt.Printf("|%16s%s%16s|\n", "", "Silakan Pilih Aktivitas!", "")
 	fmt.Printf("| %-54s |\n", "1. Tambah Tempat Co-Working Space")
@@ -239,9 +342,9 @@ func menuTambah() {
 	fmt.Printf("| %-54s |\n", "6. Hapus Ulasan")
 	fmt.Println("+========================================================+")
 	fmt.Print("Pilih (1/2/3/4/5/6): ")
-}
+}*/
 
-func menuUlasan() {
+func menuTambahUlasan() {
 	fmt.Println("+========================================================+")
 	fmt.Printf("|%7s%s%7s|\n", "", "Tambah Ulasan untuk Co-Working Space berapa?", "")
 	fmt.Println("+========================================================+")
@@ -287,25 +390,35 @@ func bacaUlasan(cws *coWorkS, n int) {
 
 func bacaData(cws *coWorkS, n int) {
 	var i, j int
+	var idCws int = 1
 	for i = 0; i < n; i++ {
 		cws[i].lenFasilitas = 1
+		cws[i].ID = idCws
 		fmt.Printf("\nCo-Working Space %d\n", i+1)
+		fmt.Printf("ID Co-Working Space: %d\n", cws[i].ID)
 		fmt.Print("Nama Co-Working Space [Gunakan _ sebagai pengganti spasi]: ")
 		fmt.Scan(&cws[i].nama)
 
 		fmt.Print("Lokasi Co-Working Space[Gunakan _ sebagai pengganti spasi]: ")
 		fmt.Scan(&cws[i].lokasi)
 
+		fmt.Println("Masukkan fasilitas maksimal 10 / ketik # untuk berhenti")
 		j = 0
-		fmt.Print("Fasilitas Co-Working Space: ")
-		fmt.Scan(&cws[i].fasilitas[j])
-		for cws[i].fasilitas[j] != "#" {
+		for j < 10 {
+			var fasilitas string
+			fmt.Printf("Fasilitas ke %d: ", j+1)
+			fmt.Scan(&fasilitas)
+			if fasilitas == "#" {
+				j = 10
+			} else {
+				cws[i].fasilitas[j] = fasilitas
+				cws[i].lenFasilitas++
+			}
 			j++
-			cws[i].lenFasilitas++
-			fmt.Scan(&cws[i].fasilitas[j])
 		}
 		fmt.Print("Harga Sewa Co-Working Space: ")
 		fmt.Scan(&cws[i].harga_sewa)
+		idCws++
 	}
 }
 
