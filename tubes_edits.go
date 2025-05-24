@@ -40,7 +40,7 @@ func main() {
 	back = false
 	aksesKe = 1
 	aksesPilTambah = 1
-	for !valid {
+	for !valid { // terlalu gpt
 		mainMenu()
 		fmt.Scan(&pilih)
 		// pengecekan pilihan pengguna
@@ -58,7 +58,7 @@ func main() {
 			} else {
 				hapusData(&cws, &nData)
 			}
-		} else {
+		} else { //pilihan 2
 			if aksesKe == 1 {
 				DataKosong()
 			} else {
@@ -73,7 +73,8 @@ func main() {
 					}
 				}
 			}
-		} else if pilih == 2 {
+		}
+		} if pilih == 2 {
 			/*menu baru (menuTambah) akan dimunculkan kemudian pengguna bisa memilih
 			akan melakukan aksi apa*/
 			menuTambah()
