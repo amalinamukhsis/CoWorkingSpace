@@ -305,7 +305,7 @@ func menuRatingdanUlasan(cws *coWorkS, nData int) {
 	program := true
 	for program == true {
 		fmt.Println("\nMenu rating dan ulasan:")
-		fmt.Println("1. Tambah ulasan dan rating\n2. Edit ulasan dan rating\n3. hapus ulasan dan rating\n4. Tampilkan ulasan satu Co-Working Space\n0. Exit")
+		fmt.Println("1. Tambah ulasan dan rating\n2. Edit ulasan dan rating\n3. hapus ulasan dan rating\n0. Exit")
 		fmt.Print("Masukkan Pilihan menu rating ")
 		fmt.Scan(&menuRating)
 		switch menuRating {
@@ -558,11 +558,12 @@ func tampilkanUlasan(u *[100]Ulasan, jumlahUlasan int) {
 	fmt.Print("Masukkan nama co-working space: ")
 	fmt.Scan(&namaSpace)
 	fmt.Printf("\nDaftar ulasan: %s\n", namaSpace)
-	for i := 0; i < jumlahUlasan; i++ {
+	for i := 1; i < jumlahUlasan; i++ {
 		if u[i].namaCW == namaSpace {
-			fmt.Println("Nama pengulas: ", u[i].nama)
-			fmt.Println("Komentar: ", u[i].isi)
-			fmt.Printf("Rating: %.2f", u[i].rating)
+			fmt.Println(u[i].nama)
+			fmt.Println(u[i].namaCW)
+			fmt.Println(u[i].isi)
+			fmt.Printf("%.2f", u[i].rating)
 			found = true
 		}
 	}
