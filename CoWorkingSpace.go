@@ -138,8 +138,8 @@ func tambahCWS(cws *coWorkS, nData *int) {
 				fmt.Print(", ")
 			}
 		}
-		fmt.Printf("\nHarga sewa: %f", cws[i].harga_sewa)
-		fmt.Printf("\nRating: %f", cws[i].rating)
+		fmt.Printf("\nHarga sewa: %.2f", cws[i].harga_sewa)
+		fmt.Printf("\nRating: %.2f", cws[i].rating)
 	}
 
 }
@@ -244,7 +244,7 @@ func menuFilter(cws *coWorkS, nData int) {
 			if cws[i].fasilitas[j] == filter {
 				fmt.Println("Nama Co-Working Space: ", cws[i].nama)
 				fmt.Println("Lokasi Co-Working Space: ", cws[i].lokasi)
-				fmt.Println("\nHarga Sewa Co-Working Space: ", cws[i].harga_sewa)
+				fmt.Println("Harga Sewa Co-Working Space: ", cws[i].harga_sewa)
 				fmt.Println("Rating: ", cws[i].rating)
 				found = true
 			}
@@ -270,6 +270,8 @@ func menuRatingdanUlasan(cws *coWorkS, nData int) {
 			editUlasan(&daftarUlasan, jumlahUlasan)
 		case 3:
 			hapusUlasan(&daftarUlasan, &jumlahUlasan)
+		case 4:
+			tampilkanUlasan()
 		case 0:
 			program = false
 		default:
@@ -467,6 +469,11 @@ func editUlasan(u *[100]Ulasan, jumlahUlasan int) {
 			fmt.Print("Masukkan ulasan baru: ")
 			fmt.Scan(&daftarUlasan[i].isi)
 			fmt.Println("Ulasan berhasil diperbarui.")
+			fmt.Println("Ulasan terbaru")
+			fmt.Println(u[i].nama)
+			fmt.Println(u[i].namaCW)
+			fmt.Println(u[i].isi)
+			fmt.Printf("%.2f", u[i].rating)
 			found = true
 		}
 	}
@@ -497,6 +504,26 @@ func hapusUlasan(u *[100]Ulasan, jumlahUlasan *int) {
 		fmt.Println("Ulasan berhasil dihapus.")
 	} else {
 		fmt.Println("Ulasan tidak ditemukan.")
+	}
+}
+
+func tampilkanUlasan(u *[100]Ulasan, jumlahUlasan int) {
+	var namaSpace string
+	var found bool
+	fmt.Print("Masukkan nama co-working space: ")
+	fmt.Scan(&namaSpace)
+	fmt.Printf("\nDaftar ulasan: %s\n", namaSpace)
+	for i := 1; i < jumlahUlasan; i++ {
+		if u[i].namaCW == namaSpace {
+			fmt.Println(u[i].nama)
+			fmt.Println(u[i].namaCW)
+			fmt.Println(u[i].isi)
+			fmt.Printf("%.2f", u[i].rating)
+			found = true
+		}
+	}
+	if found == false {
+		fmt.Println("Belum ada ulasan")
 	}
 }
 
