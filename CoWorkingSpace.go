@@ -16,12 +16,10 @@ type coWorkSpace struct {
 type coWorkS [NMAX]coWorkSpace
 
 type Ulasan struct {
-	ID, coWorkingID int
-	kategori        string
-	username        string
-	komentar        [15]string
-	rating          float64
-	lenKomentar     int
+	namaCW string
+	nama   string
+	isi    string
+	rating float64
 }
 type arrUlasan [NMAX]Ulasan
 
@@ -37,13 +35,13 @@ func main() {
 		fmt.Println("Masukkan Pilihan Pengguna: ")
 		fmt.Println("1. Pemilik\n2. Pelanggan\n0. Keluar ")
 		fmt.Print("Masukkan Pilihan: ")
-		//scan input pemilik atau pelangga
+		//scan input pemilik atau pelanggan
 		fmt.Scan(&inputUser)
 		switch inputUser {
 		case 1:
 			menuPemilik(&cws, &nData)
 		case 2:
-			menuPelanggan(&cws, &nData)
+			menuPelanggan(&cws, nData)
 		case 0:
 			fmt.Println("Terima Kasih")
 			jalan = false //program di berhentikan.
@@ -129,7 +127,7 @@ func tambahCWS(cws *coWorkS, nData *int) {
 	//print semua Co-Working yang di tambahkan
 	fmt.Println("Hasil semua data yang sudah ditambahkan")
 	for i := idx; i < *nData; i++ {
-		fmt.Println("Data Co-Working Space")
+		fmt.Println("\nData Co-Working Space")
 		fmt.Printf("\nCo-working space ke %d", i+1)
 		fmt.Printf("\nNama: %s", cws[i].nama)
 		fmt.Printf("\nLokasi: %s", cws[i].lokasi)
@@ -167,10 +165,10 @@ func menuPelanggan(cws *coWorkS, nData int) {
 	for jalan {
 		fmt.Println("Pilih Menu Pelanggan: ")
 		fmt.Println("1. Tampilkan Co-Working Space")
-		fmt.Println("2. Mencari Co-Working Space")
-		fmt.Println("3. Mengurutkan Co-Working Space")
-		fmt.Println("4. Filter Co-Working Space")
-		fmt.Println("5. Ulasan dan Rating")
+		fmt.Println("2. Rating dan Ulasan")
+		fmt.Println("3. Mencari Co-Working Space")
+		fmt.Println("4. Mengurutkan Co-Working Space")
+		fmt.Println("5. Filter Co-Working Space")
 		fmt.Println("0. Exit")
 		fmt.Print("Masukkan pilihan: ")
 		fmt.Scan(&pilihanPelanggan)
@@ -179,13 +177,13 @@ func menuPelanggan(cws *coWorkS, nData int) {
 		case 1:
 			tampilCws(cws, nData)
 		case 2:
-			menuCari(cws, nData)
+			menuRatingdanUlasan(cws, nData)
 		case 3:
-			fmt.Print("data belum ada")
+			menuCari(cws, nData)
 		case 4:
-			fmt.Print("data belum ada")
+			menuSort(cws, nData)
 		case 5:
-			fmt.Print("data belum ada")
+			menuFilter(cws, nData)
 		case 0:
 			jalan = false
 		default:
@@ -197,7 +195,7 @@ func menuPelanggan(cws *coWorkS, nData int) {
 func menuCari(cws *coWorkS, nData int) {
 	var untukCari int
 	program := true
-	for program {
+	for program == true {
 		fmt.Println("Cari Co-Working Space berdasarkan:")
 		fmt.Println("1. Lokasi\n2. Nama\n0. exit")
 		fmt.Print("Pilihan yang mau dicari: ")
@@ -206,7 +204,72 @@ func menuCari(cws *coWorkS, nData int) {
 		case 1:
 			cariLokasicws(*cws, nData)
 		case 2:
-			//cariNamacws(cws, nData)
+			cariNamaCws(*cws, nData)
+		case 0:
+			program = false
+		default:
+			fmt.Println("Tidak valid")
+		}
+	}
+}
+
+func menuSort(cws *coWorkS, nData int) {
+	var urut int
+	program := true
+	for program == true {
+		fmt.Println("Urutkan Co-Working Space berdasarkan:")
+		fmt.Println("1. Harga Sewa\n2. Rating \n0. exit")
+		fmt.Print("Pilihan yang mau di urutkan: ")
+		fmt.Scan(&urut)
+		switch urut {
+		case 1:
+			selectionSortHargaSewa(cws, nData)
+		case 2:
+			insertionSortRating(cws, nData)
+		case 0:
+			program = false
+		default:
+			fmt.Println("Tidak valid")
+		}
+	}
+}
+
+func menuFilter(cws *coWorkS, nData int) {
+	var filter string
+	fmt.Print("Masukkan Fasilitas yang akan difilter: ")
+	fmt.Scan(&filter)
+	found := false
+	for i := 0; i < nData; i++ {
+		for j := 0; j < 10; j++ {
+			if cws[i].fasilitas[j] == filter {
+				fmt.Println("Nama Co-Working Space: ", cws[i].nama)
+				fmt.Println("Lokasi Co-Working Space: ", cws[i].lokasi)
+				fmt.Println("\nHarga Sewa Co-Working Space: ", cws[i].harga_sewa)
+				fmt.Println("Rating: ", cws[i].rating)
+				found = true
+			}
+		}
+	}
+	if found == false {
+		fmt.Print("Tidak ditemukan")
+	}
+}
+
+func menuRatingdanUlasan(cws *coWorkS, nData int) {
+	var menuRating int
+	program := true
+	for program == true {
+		fmt.Println("\nMenu rating dan ulasan:")
+		fmt.Println("1. Tambah ulasan dan rating\n2. Edit ulasan dan rating\n3. hapus ulasan dan rating\n0. Exit")
+		fmt.Print("Masukkan Pilihan menu rating ")
+		fmt.Scan(&menuRating)
+		switch menuRating {
+		case 1:
+			tambahUlasan(cws, nData)
+		case 2:
+			editUlasan(&daftarUlasan, jumlahUlasan)
+		case 3:
+			hapusUlasan(&daftarUlasan, &jumlahUlasan)
 		case 0:
 			program = false
 		default:
@@ -227,128 +290,215 @@ func tampilCws(cws *coWorkS, nData int) {
 			}
 		}
 		fmt.Println("\nHarga Sewa Co-Working Space: ", cws[i].harga_sewa)
-		fmt.Println("Rating: ", cws[i].rating)
+		fmt.Printf("Rating: %.2f ", cws[i].rating)
 	}
 }
 
+/*cari lokasi berdasarkan sequential search*/
 func cariLokasicws(cws coWorkS, nData int) {
 	var lokasi string
+	var found = false
 	fmt.Print("Masukkan lokasi yang anda inginkan : ")
 	fmt.Scan(&lokasi)
 	fmt.Print("Co-Working space di ", lokasi)
 	for i := 0; i < nData; i++ {
 		if cws[i].lokasi == lokasi {
-			fmt.Println("Nama Co-Working Space: ", cws[i].nama)
+			fmt.Println("\nNama Co-Working Space: ", cws[i].nama)
 			fmt.Println("Lokasi Co-Working Space: ", cws[i].lokasi)
 			fmt.Println("Harga Sewa Co-Working Space: ", cws[i].harga_sewa)
 			fmt.Println("Rating: ", cws[i].rating)
+			found = true
+			/*tidak bisa dibuat else karena akan selalu print out, perlu varibael penanda kalau sidah ditemukan tidak perlu masuk
+			ke else tapi langsung berhenti*/
+			// } else {
+			// 	fmt.Println("Lokasi Co-Working space yang anda cari tidak di temukan")
+		}
+	}
+	if found == false {
+		fmt.Println("Lokasi Co-Working space yang anda cari tidak di temukan")
+
+	}
+}
+
+/*prosedur untuk mengurutkan nama menggunakan selection sort*/
+func selectionSortNama(cws coWorkS, nData int) coWorkS {
+	for i := 0; i < nData-1; i++ {
+		min := i
+		for j := i + 1; j < nData; j++ {
+			if cws[j].nama < cws[min].nama {
+				min = j
+			}
+		}
+		temp := cws[i].nama
+		cws[i].nama = cws[min].nama
+		cws[min].nama = temp
+	}
+	return cws
+}
+
+func binarySearchNama(cws coWorkS, nData int, nama string) bool {
+	bawah := 0
+	atas := nData
+
+	for bawah <= atas {
+		mid := (atas + bawah) / 2
+		if cws[mid].nama == nama {
+			return true
+		} else if cws[mid].nama < nama {
+			bawah = mid + 1
 		} else {
-			fmt.Println("Lokasi Co-Working space yang anda cari tidak di temukan")
+			atas = mid - 1
+		}
+	}
+	return false
+}
+
+func cariNamaCws(cws coWorkS, nData int) {
+	var nama string
+	fmt.Print("Masukkan nama Co-Working yang anda inginkan : ")
+	fmt.Scan(&nama)
+	fmt.Print("Nama Coworking ", nama)
+	selectionSortNama(cws, nData)
+	found := binarySearchNama(cws, nData, nama)
+	if found == true {
+		for i := 0; i < nData; i++ {
+			if cws[i].nama == nama {
+				fmt.Println("\nNama Co-Working Space: ", cws[i].nama)
+				fmt.Println("Lokasi Co-Working Space: ", cws[i].lokasi)
+				fmt.Println("Harga Sewa Co-Working Space: ", cws[i].harga_sewa)
+				fmt.Println("Rating: ", cws[i].rating)
+			}
+		}
+	} else {
+		fmt.Println("Nama Co-Working space yang anda cari tidak di temukan")
+
+	}
+
+}
+
+func selectionSortHargaSewa(cws *coWorkS, nData int) {
+	for i := 0; i < nData-1; i++ {
+		min := i
+		for j := i + 1; j < nData; j++ {
+			if cws[j].harga_sewa < cws[min].harga_sewa {
+				min = j
+			}
+		}
+		temp := cws[i].harga_sewa
+		cws[i].harga_sewa = cws[min].harga_sewa
+		cws[min].harga_sewa = temp
+	}
+	tampilCws(cws, nData)
+}
+
+func insertionSortRating(cws *coWorkS, nData int) {
+	for i := 1; i < nData; i++ {
+		max := i
+		j := i - 1
+		for j >= 0 && cws[j].rating < cws[max].rating {
+			cws[j+1] = cws[j]
+			j = j - 1
+		}
+		cws[j+1] = cws[i]
+	}
+	tampilCws(cws, nData)
+}
+
+func tambahUlasan(cws *coWorkS, nData int) {
+	var u Ulasan
+	var found bool
+
+	fmt.Print("Masukkan nama co-working space yang ingin diulas: ")
+	fmt.Scan(&u.namaCW)
+	for i := 0; i < nData; i++ {
+		if u.namaCW == cws[i].nama {
+			found = true
+		}
+	}
+	if found == false {
+		fmt.Println("Co-working space tidak ditemukan.")
+		return
+	}
+
+	fmt.Print("Masukkan nama Anda: ")
+	fmt.Scan(&u.nama)
+	fmt.Print("Masukkan isi ulasan Anda: ")
+	fmt.Scan(&u.isi)
+	fmt.Print("Masukkan rating (0.0 - 5.0): ")
+	fmt.Scan(&u.rating)
+	daftarUlasan[jumlahUlasan] = u  // masukkan ulasan ke struct
+	jumlahUlasan = jumlahUlasan + 1 //lalu tambhjumlah ulasan
+	//setrlah rating masuk, hitung rata-rata rating untuk ditampilkan di sort by rating
+	hitungRataRating(cws, nData)
+	fmt.Println("Ulasan berhasil ditambahkan.")
+}
+
+var daftarUlasan [100]Ulasan
+var jumlahUlasan int
+
+func hitungRataRating(cws *coWorkS, nData int) {
+	for i := 0; i < nData; i++ {
+		var total float64
+		var jml int
+		for j := 0; j < jumlahUlasan; j++ {
+			if daftarUlasan[j].namaCW == cws[i].nama {
+				total += daftarUlasan[j].rating
+				jml = jml + 1
+			}
+		}
+		if jml > 0 {
+			cws[i].rating = total / float64(jml)
+		} else {
+			cws[i].rating = 0
 		}
 	}
 }
 
-func cariNamacws(cws *coWorkS, nData int) {
-	var namaCWS string
-	fmt.Print("Masukkan nama Co-Working Space yang anda inginkan: ")
-	fmt.Scan(&namaCWS)
+func editUlasan(u *[100]Ulasan, jumlahUlasan int) {
+	var namaCW, namaUser string
+	var found bool
+
+	fmt.Print("Masukkan nama co-working space: ")
+	fmt.Scan(&namaCW)
+	fmt.Print("Masukkan nama Anda: ")
+	fmt.Scan(&namaUser)
+	for i := 0; i < jumlahUlasan; i++ {
+		if daftarUlasan[i].namaCW == namaCW && daftarUlasan[i].nama == namaUser {
+			fmt.Print("Masukkan ulasan baru: ")
+			fmt.Scan(&daftarUlasan[i].isi)
+			fmt.Println("Ulasan berhasil diperbarui.")
+			found = true
+		}
+	}
+	if found == false {
+		fmt.Println("nama tidak ditemukan.")
+	}
 }
+func hapusUlasan(u *[100]Ulasan, jumlahUlasan *int) {
+	var namaCW, namaUser string
+	var found bool
 
-// func hapusUlasan(arr *arrUlasan, n *int) {
-// 	var user string
-// 	fmt.Print("Masukkan username yang ingin dihapus ulasannya: ")
-// 	fmt.Scan(&user)
+	fmt.Print("Masukkan nama co-working space: ")
+	fmt.Scan(&namaCW)
+	fmt.Print("Masukkan nama Anda: ")
+	fmt.Scan(&namaUser)
+	for i := 0; i < *jumlahUlasan; i++ {
+		if daftarUlasan[i].namaCW == namaCW && daftarUlasan[i].nama == namaUser && !found {
+			// Geser elemen ke kiri
+			for j := i; j < *jumlahUlasan-1; j++ {
+				daftarUlasan[j] = daftarUlasan[j+1]
+			}
+			*jumlahUlasan = *jumlahUlasan - 1
+			found = true
+		}
+	}
 
-// 	found := false
-// 	for i := 0; i < *n; i++ {
-// 		if arr[i].username == user {
-// 			// Reset isi ulasan
-// 			arr[i].username = ""
-// 			for j := 0; j < arr[i].lenKomentar; j++ {
-// 				arr[i].komentar[j] = ""
-// 			}
-// 			arr[i].rating = 0.0
-// 			found = true
-// 		}
-// 	}
-// 	if found {
-// 		fmt.Println("Semua ulasan oleh", user, "berhasil dihapus.")
-// 	} else {
-// 		fmt.Println("Ulasan oleh", user, "tidak ditemukan.")
-// 	}
-// }
-
-// func editUlasan(arr *arrUlasan, n int) {
-// 	var user string
-// 	fmt.Print("Masukkan username yang ingin diedit ulasannya: ")
-// 	fmt.Scan(&user)
-
-// 	edit := false
-// 	for i := 0; i < n; i++ {
-// 		if arr[i].username == user {
-// 			edit = true
-
-// 			// Tampilkan ulasan sebelumnya
-// 			fmt.Println("\nUlasan Sebelumnya: ")
-// 			fmt.Println("Username:", arr[i].username)
-// 			fmt.Print("Komentar: ")
-// 			for j := 0; j < 15; j++ {
-// 				if arr[i].komentar[j] != "" {
-// 					if j > 0 && arr[i].komentar[j-1] != "" {
-// 						fmt.Print(", ")
-// 					}
-// 					fmt.Print(arr[i].komentar[j])
-// 				}
-// 			}
-// 			fmt.Println()
-// 			fmt.Println("Rating:", arr[i].rating)
-
-// 			// Input komentar baru
-// 			fmt.Println("\nMasukkan komentar baru (maks 15):")
-// 			var komentarBaru [15]string
-// 			var stopInput bool
-// 			for j := 0; j < 15; j++ {
-// 				if !stopInput {
-// 					var komen string
-// 					fmt.Printf("Komentar %d (kosongkan untuk selesai): ", j+1)
-// 					fmt.Scanln(&komen)
-// 					if komen == "" {
-// 						stopInput = true
-// 					} else {
-// 						komentarBaru[j] = komen
-// 					}
-// 				}
-// 			}
-// 			// Simpan komentar baru
-// 			for j := 0; j < 15; j++ {
-// 				arr[i].komentar[j] = komentarBaru[j]
-// 			}
-
-// 			// Input rating baru
-// 			fmt.Print("Masukkan rating baru: ")
-// 			fmt.Scan(&arr[i].rating)
-
-// 			// Tampilkan ulasan terbaru
-// 			fmt.Println("\nUlasan Terbaru: ")
-// 			fmt.Println("Username: ", arr[i].username)
-// 			fmt.Print("Komentar: ")
-// 			for j := 0; j < 15; j++ {
-// 				if arr[i].komentar[j] != "" {
-// 					if j > 0 && arr[i].komentar[j-1] != "" {
-// 						fmt.Print(", ")
-// 					}
-// 					fmt.Print(arr[i].komentar[j])
-// 				}
-// 			}
-// 			fmt.Println()
-// 			fmt.Println("Rating: ", arr[i].rating)
-// 			fmt.Println("Ulasan berhasil diperbarui\n")
-// 		}
-// 	}
-// 	if !edit {
-// 		fmt.Println("Ulasan oleh", user, "tidak ditemukan")
-// 	}
-//}
+	if found == true {
+		fmt.Println("Ulasan berhasil dihapus.")
+	} else {
+		fmt.Println("Ulasan tidak ditemukan.")
+	}
+}
 
 // func bacaData(cws *coWorkS, n int) {
 // 	var i, j int
