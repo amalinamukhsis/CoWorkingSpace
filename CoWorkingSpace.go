@@ -18,8 +18,9 @@ type coWorkS [NMAX]coWorkSpace
 type Ulasan struct {
 	namaCW string
 	nama   string
-	isi    string
+	isi    [15]string
 	rating float64
+	lenIsi int
 }
 type arrUlasan [NMAX]Ulasan
 
@@ -94,7 +95,7 @@ func tambahCWS(cws *coWorkS, nData *int) {
 		currentposition.lenUlasan = 0
 		currentposition.rating = 0
 
-		fmt.Print("Masukkan nama: ")
+		fmt.Print("Masukkan nama (nama Co-Working space harus unik): ")
 		fmt.Scan(&currentposition.nama)
 		fmt.Print("Masukkan lokasi: ")
 		fmt.Scan(&currentposition.lokasi)
@@ -306,7 +307,7 @@ func menuRatingdanUlasan(cws *coWorkS, nData int) {
 	for program == true {
 		fmt.Println("\nMenu rating dan ulasan:")
 		fmt.Println("1. Tambah ulasan dan rating\n2. Edit ulasan dan rating\n3. hapus ulasan dan rating\n4. Tampilkan ulasan satu Co-Working Space\n0. Exit")
-		fmt.Print("Masukkan Pilihan menu rating ")
+		fmt.Print("Masukkan Pilihan menu rating: ")
 		fmt.Scan(&menuRating)
 		switch menuRating {
 		case 1:
@@ -469,8 +470,24 @@ func tambahUlasan(cws *coWorkS, nData int) {
 
 	fmt.Print("Masukkan nama Anda: ")
 	fmt.Scan(&u.nama)
-	fmt.Print("Masukkan isi ulasan Anda: ")
-	fmt.Scan(&u.isi)
+	fmt.Println("Masukkan isi ulasan Anda perbaris, maksimal 15, ketik (.) untuk berhenti")
+	jumlah := 0
+	u.lenIsi = 0
+	for jumlah < 15 {
+		var ulas string
+		fmt.Printf("masukkan ulasan anda: ")
+		fmt.Scan(&ulas)
+		if ulas == "." {
+			jumlah = 15
+		} else {
+			u.isi[jumlah] = ulas
+			u.lenIsi++
+		}
+		jumlah++
+	}
+	for i := 0; i < u.lenIsi; i++ {
+		fmt.Printf("Ulasan ke-%d: %s\n", i+1, u.isi[i])
+	}
 	fmt.Print("Masukkan rating (0.0 - 5.0): ")
 	fmt.Scan(&u.rating)
 	daftarUlasan[jumlahUlasan] = u  // masukkan ulasan ke struct
